@@ -1,17 +1,40 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React, { useEffect, useState } from 'react';
+import openSocket from 'socket.io-client';
+import './App.css';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const ENDPOINT = "http://localhost:8000";
+const socket = openSocket(ENDPOINT);
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+function App() {
+
+  // put bittrex state here
+  const [bittrexState, setBittrexState] = useState()
+
+  // open up connection to your socket API here
+  useEffect(() => {
+    console.log("APP LOADED")
+    socket.emit('fetchBittrexData', { optionalPayload: null }, (error: any) => {
+      console.log('request sent to API to fetch bittrex data')
+    });
+  },);
+
+  // listen for responses from your socket API here and update state in react
+  useEffect(() => {
+
+    socket.on('recieveBittrexData', (bittrexData: any) => {
+      console.log('Got response from api for bittrex data')
+
+      // set bittrex state here
+      setBittrexState(bittrexData)
+    });
+
+  }, []);
+
+  return (
+    <div className="App">
+      <h1>Order Book </h1>
+    </div>
+  );
+}
+
+export default App;
