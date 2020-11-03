@@ -3,7 +3,7 @@ import openSocket from 'socket.io-client';
 import './App.css';
 
 const ENDPOINT = "http://localhost:8000";
-const socket = openSocket(ENDPOINT);
+const socket = openSocket(process.env.REACT_APP_API || ENDPOINT);
 
 function App() {
 
