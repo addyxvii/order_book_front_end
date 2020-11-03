@@ -13,7 +13,7 @@ function App() {
 
   // get poloniex
   useEffect(() => {
-    socket.emit('fetchPolinexData', {}, (error: any) => {
+    socket.emit('fetchPolinexData', (error: any) => {
       console.log("yooooo")
     });
   }, []);
@@ -32,7 +32,7 @@ function App() {
   
   // open up connection to your socket API here
   useEffect(() => {
-    socket.emit('fetchBittrexData', { optionalPayload: null }, (error: any) => {
+    socket.emit('fetchBittrexData', (error: any) => {
       console.log('request sent to API to fetch bittrex data')
     });
   },[]);
