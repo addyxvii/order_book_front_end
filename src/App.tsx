@@ -10,11 +10,10 @@ const socket = openSocket(ENDPOINT);
 function App() {
 
   // put bittrex state here
+  const[exchangeState, setExchangeState] = useState<any>("")
   const [bittrexState, setBittrexState] = useState<any>({})
-  const [poloniexState, setPoloniexState] = useState(undefined)
-
-  let poloniexPrice = "SANITY CHECK"
-  console.log(poloniexPrice)
+  const [rateState, setRateState] = useState(undefined)
+  const [volumeState, setVolumeState] = useState(undefined)
 
   useEffect(() => {
     socket.emit('fetchPolinexData', (error: any) => {
@@ -26,11 +25,10 @@ function App() {
   useEffect(() => {
     socket.on('recievePoloniexData', (poloniexData: any) => {
       // set bittrex state here
-      if (poloniexState === undefined) {
         // poloniexPrice.push(poloniexData.poloniexData.price);
         // console.log('got poloniex')
-        setPoloniexState(poloniexData.poloniexData.price)
-      } 
+        setExchangeState("poloniex");
+        setRateState(poloniexData.poloniexData.price)
     }); 
     return () => socket.disconnect() as any;
   }, []);
@@ -44,8 +42,15 @@ function App() {
   // listen for responses from your socket API here and update state in react
   useEffect(() => {
     socket.on('recieveBittrexData', (bittrexData: any) => {
-      console.log(bittrexData)
+      let bittrexAsks = bittrexData.asks;
+      // let amount = bittrexData.asks.Quantity;
+      console.log(bittrexAsks);
+      setExchangeState("Bittrex");
       setBittrexState(bittrexData)
+      if(bittrexAsks){
+        setRateState(bittrexAsks.Rate);
+        setVolumeState(bittrexAsks.Quantity); 
+      }
       
     });
     return () => socket.disconnect() as any;
@@ -54,14 +59,8 @@ function App() {
   return (
     <div className="App">
       <h1>Order Book </h1>
-      <Book title="Ask" rate={poloniexState}/>
+      <Book title="Ask" exchange={exchangeState} rate={rateState} amount={volumeState}/>
       <Book title="Bid"/> 
-      {
-        bittrexState ? "yay DAta" : 'nodataa'
-      }
-            {
-        poloniexState ? "yay poloniex data" : 'no poloniex dataa'
-      }
       </div>
   );
 }

@@ -17,12 +17,11 @@ return (
     <th> Exchange </th>
     <th> Rate </th>
     <th> Amount </th>
-    <tr>{amount}</tr>
 </tr>
  <tr>
     <td>{exchange}</td>
     <td>{rate}</td>
-    <td>$100</td>
+    <td>{amount}</td>
  </tr>
 </table> 
 )}
