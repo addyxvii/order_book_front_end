@@ -10,10 +10,14 @@ const socket = openSocket(ENDPOINT);
 function App() {
 
   // put bittrex state here
-  const[exchangeState, setExchangeState] = useState<any>("")
-  const [bittrexState, setBittrexState] = useState<any>({})
-  const [rateState, setRateState] = useState(undefined)
-  const [volumeState, setVolumeState] = useState(undefined)
+  const[askExchangeState, setAskExchangeState] = useState<any>("")
+  const [askRateState, setAskRateState] = useState(undefined)
+  const [askVolumeState, setAskVolumeState] = useState(undefined)
+
+  const[bidExchangeState, setBidExchangeState] = useState<any>("")
+  const [bidRateState, setBidRateState] = useState(undefined)
+  const [bidVolumeState, setBidVolumeState] = useState(undefined)
+
 
   useEffect(() => {
     socket.emit('fetchPolinexData', (error: any) => {
@@ -24,11 +28,19 @@ function App() {
   // recieve poloniex data
   useEffect(() => {
     socket.on('recievePoloniexData', (poloniexData: any) => {
-      // set bittrex state here
-        // poloniexPrice.push(poloniexData.poloniexData.price);
-        // console.log('got poloniex')
-        setExchangeState("poloniex");
-        setRateState(poloniexData.poloniexData.price)
+      console.log(poloniexData.poloniexData.size)
+      if(poloniexData.poloniexData.type === 'ask'){
+        let poloniexAsksPrice = poloniexData.poloniexData.price;
+        let poloniexAskVolume = poloniexData.poloniexData.size;
+        setAskExchangeState("Poloniex");
+        setAskRateState(poloniexAsksPrice);
+        setAskVolumeState(poloniexAskVolume);
+
+      } else {
+        let poloniexBids = poloniexData.poloniexData.type;
+        setBidExchangeState("Poloniex");
+        setBidRateState(poloniexBids);
+      }
     }); 
     return () => socket.disconnect() as any;
   }, []);
@@ -39,17 +51,21 @@ function App() {
     });
   },[]);
 
-  // listen for responses from your socket API here and update state in react
   useEffect(() => {
     socket.on('recieveBittrexData', (bittrexData: any) => {
       let bittrexAsks = bittrexData.asks;
-      // let amount = bittrexData.asks.Quantity;
-      console.log(bittrexAsks);
-      setExchangeState("Bittrex");
-      setBittrexState(bittrexData)
+      let bittrexBids = bittrexData.bids;
+
+      setAskExchangeState("Bittrex");
       if(bittrexAsks){
-        setRateState(bittrexAsks.Rate);
-        setVolumeState(bittrexAsks.Quantity); 
+        setAskRateState(bittrexAsks.Rate);
+        setAskVolumeState(bittrexAsks.Quantity); 
+      }
+
+      if(bittrexBids){
+        setBidRateState(bittrexBids.Rate);
+        setBidVolumeState(bittrexBids.Quantity); 
+        setBidExchangeState("Bittrex");
       }
       
     });
@@ -59,8 +75,8 @@ function App() {
   return (
     <div className="App">
       <h1>Order Book </h1>
-      <Book title="Ask" exchange={exchangeState} rate={rateState} amount={volumeState}/>
-      <Book title="Bid"/> 
+      <Book title="Ask" exchange={askExchangeState} rate={askRateState} amount={askVolumeState}/>
+      <Book title="Bid" exchange={bidExchangeState} rate={bidRateState} amount={bidVolumeState}/> 
       </div>
   );
 }
