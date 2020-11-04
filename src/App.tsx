@@ -2,19 +2,23 @@ import React, { EffectCallback, useEffect, useState } from 'react';
 import openSocket from 'socket.io-client';
 import './App.css';
 
+import  Book  from './Book';
+
 const ENDPOINT = "http://localhost:8000";
-const socket = openSocket(process.env.REACT_APP_API as any);
+const socket = openSocket(ENDPOINT);
 
 function App() {
 
   // put bittrex state here
-  const [bittrexState, setBittrexState] = useState<any>(undefined)
+  const [bittrexState, setBittrexState] = useState<any>({})
   const [poloniexState, setPoloniexState] = useState(undefined)
 
-  // get poloniex
+  let poloniexPrice = "SANITY CHECK"
+  console.log(poloniexPrice)
+
   useEffect(() => {
     socket.emit('fetchPolinexData', (error: any) => {
-      console.log("yooooo")
+      console.warn(error)
     });
   }, []);
 
@@ -23,17 +27,17 @@ function App() {
     socket.on('recievePoloniexData', (poloniexData: any) => {
       // set bittrex state here
       if (poloniexState === undefined) {
-        console.log('got poloniex')
-        setPoloniexState(poloniexData)
+        // poloniexPrice.push(poloniexData.poloniexData.price);
+        // console.log('got poloniex')
+        setPoloniexState(poloniexData.poloniexData.price)
       } 
     }); 
     return () => socket.disconnect() as any;
   }, []);
   
-  // open up connection to your socket API here
   useEffect(() => {
     socket.emit('fetchBittrexData', (error: any) => {
-      console.log('request sent to API to fetch bittrex data')
+      console.warn(error)
     });
   },[]);
 
@@ -50,13 +54,15 @@ function App() {
   return (
     <div className="App">
       <h1>Order Book </h1>
+      <Book title="Ask" rate={poloniexState}/>
+      <Book title="Bid"/> 
       {
-        bittrexState ? "yay data" : 'nodataa'
+        bittrexState ? "yay DAta" : 'nodataa'
       }
             {
         poloniexState ? "yay poloniex data" : 'no poloniex dataa'
       }
-    </div>
+      </div>
   );
 }
 
