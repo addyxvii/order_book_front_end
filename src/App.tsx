@@ -1,23 +1,27 @@
 import React, { EffectCallback, useEffect, useState } from 'react';
 import openSocket from 'socket.io-client';
 import './App.css';
+import './Book.css';
 
-import  Book  from './Book';
+import Book from './Book';
+import { JsxEmit } from 'typescript';
 
 const ENDPOINT = "http://localhost:8000";
 const socket = openSocket(ENDPOINT);
 
-function App() {
+export interface Exchange {
+  exchange: string
+  ask: string
+  volume: string
+}
 
-  // put bittrex state here
-  const[askExchangeState, setAskExchangeState] = useState<any>("")
-  const [askRateState, setAskRateState] = useState(undefined)
-  const [askVolumeState, setAskVolumeState] = useState(undefined)
+const App: React.FC<{}> = (): JSX.Element => {
 
-  const[bidExchangeState, setBidExchangeState] = useState<any>("")
-  const [bidRateState, setBidRateState] = useState(undefined)
-  const [bidVolumeState, setBidVolumeState] = useState(undefined)
-
+  const [poloniexState, setPoloniexState] = useState<Exchange[]>([{ 
+    exchange: "", 
+    ask: "", 
+    volume: "" 
+  }]);
 
   useEffect(() => {
     socket.emit('fetchPolinexData', (error: any) => {
@@ -25,60 +29,77 @@ function App() {
     });
   }, []);
 
-  // recieve poloniex data
+  let [data, setData] = useState<Exchange[]>([])
+
   useEffect(() => {
+    let poloniexAskTable: Exchange[] = [];
+
     socket.on('recievePoloniexData', (poloniexData: any) => {
-      console.log(poloniexData.poloniexData.size)
-      if(poloniexData.poloniexData.type === 'ask'){
-        let poloniexAsksPrice = poloniexData.poloniexData.price;
-        let poloniexAskVolume = poloniexData.poloniexData.size;
-        setAskExchangeState("Poloniex");
-        setAskRateState(poloniexAsksPrice);
-        setAskVolumeState(poloniexAskVolume);
 
-      } else {
-        let poloniexBids = poloniexData.poloniexData.type;
-        setBidExchangeState("Poloniex");
-        setBidRateState(poloniexBids);
+      if (poloniexData.poloniexData.type === 'ask') {
+
+        let poloniexAsksObj: Exchange = {
+          exchange: 'Poloniex',
+          ask: poloniexData.poloniexData.price,
+          volume: poloniexData.poloniexData.size,
+        };
+
+        setData([...data, poloniexAsksObj])
+
+        poloniexAskTable.unshift(poloniexAsksObj);
       }
-    }); 
-    return () => socket.disconnect() as any;
-  }, []);
-  
-  useEffect(() => {
-    socket.emit('fetchBittrexData', (error: any) => {
-      console.warn(error)
     });
-  },[]);
-
-  useEffect(() => {
-    socket.on('recieveBittrexData', (bittrexData: any) => {
-      let bittrexAsks = bittrexData.asks;
-      let bittrexBids = bittrexData.bids;
-
-      setAskExchangeState("Bittrex");
-      if(bittrexAsks){
-        setAskRateState(bittrexAsks.Rate);
-        setAskVolumeState(bittrexAsks.Quantity); 
-      }
-
-      if(bittrexBids){
-        setBidRateState(bittrexBids.Rate);
-        setBidVolumeState(bittrexBids.Quantity); 
-        setBidExchangeState("Bittrex");
-      }
-      
-    });
-    return () => socket.disconnect() as any;
-  }, []);
+  });
 
   return (
     <div className="App">
       <h1>Order Book </h1>
-      <Book title="Ask" exchange={askExchangeState} rate={askRateState} amount={askVolumeState}/>
-      <Book title="Bid" exchange={bidExchangeState} rate={bidRateState} amount={bidVolumeState}/> 
-      </div>
+      <Book
+        title="Ask"
+        data={data}
+      />
+    </div>
   );
 }
 
 export default App;
+
+
+/**
+if(poloniexAskTable.length < 9) {
+  setPoloniexState(poloniexAskTable)
+} else if(poloniexState.length > 9) {
+  setPoloniexState(poloniexState.slice(0, poloniexState.length -5))
+}
+*/
+
+/**
+ useEffect(() => {
+    socket.emit('fetchBittrexData', (error: any) => {
+      console.warn(error)
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on('recieveBittrexData', (bittrexData: any) => {
+      let {
+        bids: bittrexBids,
+        asks: bittrexAsks
+      } = bittrexData;
+
+      // setAskExchangeState("Bittrex");
+      if (bittrexAsks) {
+        // setAskRateState(bittrexAsks.Rate);
+        // setAskVolumeState(bittrexAsks.Quantity);
+      }
+
+      if (bittrexBids) {
+        // setBidRateState(bittrexBids.Rate);
+        // setBidVolumeState(bittrexBids.Quantity);
+        // setBidExchangeState("Bittrex");
+      }
+
+    });
+    return () => socket.disconnect() as any;
+  }, []);
+ */
