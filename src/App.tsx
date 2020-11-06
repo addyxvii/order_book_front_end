@@ -1,10 +1,9 @@
-import React, { EffectCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import openSocket from 'socket.io-client';
 import './App.css';
 import './Book.css';
 
 import Book from './Book';
-import { JsxEmit } from 'typescript';
 import { Chart } from './Chart';
 
 const ENDPOINT = "http://localhost:8000";
@@ -12,16 +11,17 @@ const socket = openSocket(ENDPOINT);
 
 export interface Exchange {
   exchange: string
-  ask: string
+  ask?: string
+  bid?: string
   volume: string
 }
 
 const App: React.FC<{}> = (): JSX.Element => {
 
-  const [poloniexState, setPoloniexState] = useState<Exchange[]>([{ 
-    exchange: "", 
-    ask: "", 
-    volume: "" 
+  const [poloniexState, setPoloniexState] = useState<Exchange[]>([{
+    exchange: "",
+    ask: "",
+    volume: ""
   }]);
 
   useEffect(() => {
@@ -30,41 +30,82 @@ const App: React.FC<{}> = (): JSX.Element => {
     });
   }, []);
 
-  let [data, setData] = useState<Exchange[]>([])
+  let [askData, setAskData] = useState<Exchange[]>([])
+  let [bidData, setBidData] = useState<Exchange[]>([])
+
+  console.log(askData);
+  console.log(bidData);
+
 
   useEffect(() => {
+      socket.on('recievePoloniexData', (poloniexData: any) => {
 
-    socket.on('recievePoloniexData', (poloniexData: any) => {
+        if (poloniexData.poloniexData.type === 'ask') {
 
-      if (poloniexData.poloniexData.type === 'ask') {
+          let poloniexAsksObj: Exchange = {
+            exchange: 'Poloniex',
+            ask: poloniexData.poloniexData.price,
+            volume: poloniexData.poloniexData.size,
+          };
 
-        let poloniexAsksObj: Exchange = {
-          exchange: 'Poloniex',
-          ask: poloniexData.poloniexData.price,
-          volume: poloniexData.poloniexData.size,
-        };
+          if (askData.length < 10) {
+            setAskData([...askData, poloniexAsksObj])
+          } else {
+            askData.pop();
+            setAskData(askData);
+          }
 
-        if (data.length < 10) {
-          setData([...data, poloniexAsksObj])
         } else {
-          socket.disconnect()
+          let poloniexBidObj: Exchange = {
+            exchange: 'Poloniex',
+            bid: poloniexData.poloniexData.price,
+            volume: poloniexData.poloniexData.size,
+          };
+
+          if (bidData.length < 10) {
+            setBidData([...bidData, poloniexBidObj])
+          } else {
+            bidData.pop();
+            setBidData(bidData);
+          }
         }
-        
-      }
-    });
+      });
   });
+
+  useEffect(() => {
+    socket.on('recieveBittrexData', (bittrexData: any) => {
+      let {
+        bids: bittrexBids,
+        asks: bittrexAsks
+      } = bittrexData;
+
+      // setAskExchangeState("Bittrex");
+      if (bittrexAsks) {
+        // setAskRateState(bittrexAsks.Rate);
+        // setAskVolumeState(bittrexAsks.Quantity);
+      }
+
+      if (bittrexBids) {
+        // setBidRateState(bittrexBids.Rate);
+        // setBidVolumeState(bittrexBids.Quantity);
+        // setBidExchangeState("Bittrex");
+      }
+
+    });
+    return () => socket.disconnect() as any;
+  }, []);
 
   return (
     <div className="App">
       <h1>Order Book </h1>
-      <Chart data={data} />
+      <Chart data={askData} />
       <Book
         title="Ask"
-        data={data}
+        data={askData}
       />
       <Book
         title="Bid"
-        data={data}
+        data={bidData}
       />
 
     </div>
@@ -89,26 +130,4 @@ if(poloniexAskTable.length < 9) {
     });
   }, []);
 
-  useEffect(() => {
-    socket.on('recieveBittrexData', (bittrexData: any) => {
-      let {
-        bids: bittrexBids,
-        asks: bittrexAsks
-      } = bittrexData;
-
-      // setAskExchangeState("Bittrex");
-      if (bittrexAsks) {
-        // setAskRateState(bittrexAsks.Rate);
-        // setAskVolumeState(bittrexAsks.Quantity);
-      }
-
-      if (bittrexBids) {
-        // setBidRateState(bittrexBids.Rate);
-        // setBidVolumeState(bittrexBids.Quantity);
-        // setBidExchangeState("Bittrex");
-      }
-
-    });
-    return () => socket.disconnect() as any;
-  }, []);
  */

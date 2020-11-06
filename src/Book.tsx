@@ -4,7 +4,7 @@ import './Book.css';
 
 interface TableProps {
     title: string,
-    data: any[]
+    data: any[],
 }
 
 const Book: FunctionComponent<TableProps> = ({
@@ -14,9 +14,7 @@ const Book: FunctionComponent<TableProps> = ({
     return (
         <div className="table-wrapper">
             <table>
-                <div>
                 <thead className="title">{title}</thead>
-                </div>
                 <thead>
                     <tr>
                         <th> Exchange </th>
@@ -26,7 +24,7 @@ const Book: FunctionComponent<TableProps> = ({
                 </thead>
                 <tbody>
                     {
-                        data && data.length && data.length > 8 ? data.map((row: any) => {
+                        data && data.length && data.length > 5 ? data.map((row: any) => {
                             return (
                                 <tr>
                                     {
