@@ -5,6 +5,7 @@ import './Book.css';
 
 import Book from './Book';
 import { JsxEmit } from 'typescript';
+import { Chart } from './Chart';
 
 const ENDPOINT = "http://localhost:8000";
 const socket = openSocket(ENDPOINT);
@@ -32,7 +33,6 @@ const App: React.FC<{}> = (): JSX.Element => {
   let [data, setData] = useState<Exchange[]>([])
 
   useEffect(() => {
-    let poloniexAskTable: Exchange[] = [];
 
     socket.on('recievePoloniexData', (poloniexData: any) => {
 
@@ -44,9 +44,13 @@ const App: React.FC<{}> = (): JSX.Element => {
           volume: poloniexData.poloniexData.size,
         };
 
-        setData([...data, poloniexAsksObj])
-
-        poloniexAskTable.unshift(poloniexAsksObj);
+        // @TODO sort out data flow
+        if (data.length < 10) {
+          setData([...data, poloniexAsksObj])
+        } else {
+          socket.disconnect()
+        }
+        
       }
     });
   });
@@ -54,6 +58,7 @@ const App: React.FC<{}> = (): JSX.Element => {
   return (
     <div className="App">
       <h1>Order Book </h1>
+      <Chart data={data} />
       <Book
         title="Ask"
         data={data}
