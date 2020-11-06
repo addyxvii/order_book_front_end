@@ -44,7 +44,6 @@ const App: React.FC<{}> = (): JSX.Element => {
           volume: poloniexData.poloniexData.size,
         };
 
-        // @TODO sort out data flow
         if (data.length < 10) {
           setData([...data, poloniexAsksObj])
         } else {
@@ -63,6 +62,11 @@ const App: React.FC<{}> = (): JSX.Element => {
         title="Ask"
         data={data}
       />
+      <Book
+        title="Bid"
+        data={data}
+      />
+
     </div>
   );
 }

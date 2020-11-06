@@ -17,11 +17,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eaeaea;
+  background-color: #0499f2;
+  background-image: linear-gradient(315deg, #0499f2 0%, #26f596 74%);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .table-wrapper {
   padding: 20px;
+  margin: 30px;
   min-width: 300px;
   background-color: white;
   border-radius: 6px;
@@ -32,6 +37,11 @@ body {
   align-items: center;
 }
 
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 th {
   height: 40px;
   background-color: #eaeaea;

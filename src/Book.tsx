@@ -14,6 +14,9 @@ const Book: FunctionComponent<TableProps> = ({
     return (
         <div className="table-wrapper">
             <table>
+                <div>
+                <thead className="title">{title}</thead>
+                </div>
                 <thead>
                     <tr>
                         <th> Exchange </th>
