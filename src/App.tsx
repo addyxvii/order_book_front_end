@@ -18,11 +18,6 @@ export interface Exchange {
 
 const App: React.FC<{}> = (): JSX.Element => {
 
-  const [poloniexState, setPoloniexState] = useState<Exchange[]>([{
-    exchange: "",
-    ask: "",
-    volume: ""
-  }]);
 
   useEffect(() => {
     socket.emit('fetchPolinexData', (error: any) => {
@@ -30,59 +25,36 @@ const App: React.FC<{}> = (): JSX.Element => {
     });
   }, []);
 
-  let [askData, setAskData] = useState<Exchange[]>([])
-  let [bidData, setBidData] = useState<Exchange[]>([])
+  useEffect(() => {
+    socket.emit('fetchBittrexData', (error: any) => {
+      console.warn(error)
+    });
+  }, []);
 
-  // console.log('AAAAAHHHHHHHHHHH!!!!',askData);
-  console.log(bidData);
 
+  const [poloniexAskData, setPoloniexAskData] = useState<Exchange[]>([])
+  const [poloniexBidData, setPoloniexBidData] = useState<Exchange[]>([])
+
+  const [bittrexAskData, setBittrexAskData] = useState<Exchange[]>([])
 
   useEffect(() => {
       socket.on('recievePoloniexData', (poloniexData: any) => {
         
-        if (poloniexData.type === 'ask' && askData.length < 10) {
+        if (poloniexData.type === 'ask' && poloniexAskData.length < 10) {
             delete poloniexData.type;
-            setAskData([...askData, poloniexData])
-           } else if(askData.length > 10) {
-             askData.pop();
-             setAskData(askData);
+            setPoloniexAskData([...poloniexAskData, poloniexData])
+           } else if(poloniexAskData.length > 10) {
+             poloniexAskData.pop();
+             setPoloniexAskData(poloniexAskData);
            }
 
-        if (poloniexData.type === 'bid' && bidData.length < 10) {
+        if (poloniexData.type === 'bid' && poloniexBidData.length < 10) {
             delete poloniexData.type;
-            setBidData([...bidData, poloniexData])
-          } else if(bidData.length > 10) {
-              bidData.pop();
-              setBidData(bidData);
-        }
-
-        //   let poloniexAsksObj: Exchange = {
-        //     exchange: 'Poloniex',
-        //     ask: poloniexData.poloniexData.price,
-        //     volume: poloniexData.poloniexData.size,
-        //   };
-
-        //   if (askData.length < 10) {
-        //     setAskData([...askData, poloniexAsksObj])
-        //   } else {
-        //     askData.pop();
-        //     setAskData(askData);
-        //   }
-
-        // } else {
-        //   let poloniexBidObj: Exchange = {
-        //     exchange: 'Poloniex',
-        //     bid: poloniexData.poloniexData.price,
-        //     volume: poloniexData.poloniexData.size,
-        //   };
-
-        //   if (bidData.length < 10) {
-        //     setBidData([...bidData, poloniexBidObj])
-        //   } else {
-        //     bidData.pop();
-        //     setBidData(bidData);
-        //   }
-        
+            setPoloniexBidData([...poloniexBidData, poloniexData])
+          } else if(poloniexBidData.length > 10) {
+              poloniexBidData.pop();
+              setPoloniexBidData(poloniexBidData);
+        }   
       }); return () => {
         socket.off('recievePoloniexData')
       } 
@@ -90,59 +62,42 @@ const App: React.FC<{}> = (): JSX.Element => {
 
   useEffect(() => {
     socket.on('recieveBittrexData', (bittrexData: any) => {
-      let {
-        bids: bittrexBids,
-        asks: bittrexAsks
-      } = bittrexData;
-
-      // setAskExchangeState("Bittrex");
-      if (bittrexAsks) {
-        // setAskRateState(bittrexAsks.Rate);
-        // setAskVolumeState(bittrexAsks.Quantity);
+      
+      if(bittrexData.asks && bittrexAskData.length < 10){
+        console.log('INSIDEEEEEEEE',bittrexData.asks);
+        setBittrexAskData([...bittrexAskData, bittrexData.asks] )
+      } else if(bittrexData.length > 10){
+        console.log("MORE THAN 10")
+        bittrexData.pop();
+        setBittrexAskData(bittrexAskData);
       }
 
-      if (bittrexBids) {
-        // setBidRateState(bittrexBids.Rate);
-        // setBidVolumeState(bittrexBids.Quantity);
-        // setBidExchangeState("Bittrex");
-      }
+      // if(bittrexData.bids && bittrexBidData.length < 10){
+      //   delete bittrexData.type;
+      //   setBittrexAskData([...bittrexAskData, bittrexData])
+      // } else if(bittrexData.length > 10){
+      //   bittrexData.pop();
+      //   setBittrexAskData(bittrexAskData);
+      // }
+
 
     });
-    return () => socket.disconnect() as any;
   }, []);
 
   return (
     <div className="App">
       <h1>Order Book </h1>
-      <Chart data={askData} />
+      <Chart data={poloniexAskData} />
        <Book
         title="Ask"
-        data={askData}
+        data={poloniexAskData}
       />
       <Book
         title="Bid"
-        data={bidData}
+        data={poloniexBidData}
       /> 
     </div>
   );
 }
 
 export default App;
-
-
-/**
-if(poloniexAskTable.length < 9) {
-  setPoloniexState(poloniexAskTable)
-} else if(poloniexState.length > 9) {
-  setPoloniexState(poloniexState.slice(0, poloniexState.length -5))
-}
-*/
-
-/**
- useEffect(() => {
-    socket.emit('fetchBittrexData', (error: any) => {
-      console.warn(error)
-    });
-  }, []);
-
- */
