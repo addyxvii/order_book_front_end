@@ -21,11 +21,11 @@ export const Chart: React.FC<Props> = ({ data }): JSX.Element => {
                     <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
                 </linearGradient>
             </defs>
-            <XAxis dataKey="exchange" />
+            <XAxis dataKey="price" />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip />
-            <Area type="monotone" dataKey="volume" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
+            <Area type="monotone" dataKey="size" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
         </AreaChart>
     )
 }

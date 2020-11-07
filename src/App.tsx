@@ -33,43 +33,50 @@ const App: React.FC<{}> = (): JSX.Element => {
   let [askData, setAskData] = useState<Exchange[]>([])
   let [bidData, setBidData] = useState<Exchange[]>([])
 
-  console.log(askData);
-  console.log(bidData);
+  console.log('AAAAAHHHHHHHHHHH!!!!',askData);
+  // console.log(bidData);
 
 
   useEffect(() => {
       socket.on('recievePoloniexData', (poloniexData: any) => {
+        
+        if (poloniexData.type === 'ask' && askData.length < 10) {
+            delete poloniexData.type;
+            setAskData([...askData, poloniexData])
+          //  } else if(askData.length > 5) {
+          //    askData.pop();
+          //    setAskData(askData);
+           }
+        //   let poloniexAsksObj: Exchange = {
+        //     exchange: 'Poloniex',
+        //     ask: poloniexData.poloniexData.price,
+        //     volume: poloniexData.poloniexData.size,
+        //   };
 
-        if (poloniexData.poloniexData.type === 'ask') {
+        //   if (askData.length < 10) {
+        //     setAskData([...askData, poloniexAsksObj])
+        //   } else {
+        //     askData.pop();
+        //     setAskData(askData);
+        //   }
 
-          let poloniexAsksObj: Exchange = {
-            exchange: 'Poloniex',
-            ask: poloniexData.poloniexData.price,
-            volume: poloniexData.poloniexData.size,
-          };
+        // } else {
+        //   let poloniexBidObj: Exchange = {
+        //     exchange: 'Poloniex',
+        //     bid: poloniexData.poloniexData.price,
+        //     volume: poloniexData.poloniexData.size,
+        //   };
 
-          if (askData.length < 10) {
-            setAskData([...askData, poloniexAsksObj])
-          } else {
-            askData.pop();
-            setAskData(askData);
-          }
-
-        } else {
-          let poloniexBidObj: Exchange = {
-            exchange: 'Poloniex',
-            bid: poloniexData.poloniexData.price,
-            volume: poloniexData.poloniexData.size,
-          };
-
-          if (bidData.length < 10) {
-            setBidData([...bidData, poloniexBidObj])
-          } else {
-            bidData.pop();
-            setBidData(bidData);
-          }
-        }
-      });
+        //   if (bidData.length < 10) {
+        //     setBidData([...bidData, poloniexBidObj])
+        //   } else {
+        //     bidData.pop();
+        //     setBidData(bidData);
+        //   }
+        
+      }); return () => {
+        socket.off('recievePoloniexData')
+      } 
   });
 
   useEffect(() => {
@@ -99,15 +106,14 @@ const App: React.FC<{}> = (): JSX.Element => {
     <div className="App">
       <h1>Order Book </h1>
       <Chart data={askData} />
-      <Book
+       <Book
         title="Ask"
         data={askData}
       />
-      <Book
+      {/* <Book
         title="Bid"
         data={bidData}
-      />
-
+      />  */}
     </div>
   );
 }
