@@ -33,8 +33,8 @@ const App: React.FC<{}> = (): JSX.Element => {
   let [askData, setAskData] = useState<Exchange[]>([])
   let [bidData, setBidData] = useState<Exchange[]>([])
 
-  console.log('AAAAAHHHHHHHHHHH!!!!',askData);
-  // console.log(bidData);
+  // console.log('AAAAAHHHHHHHHHHH!!!!',askData);
+  console.log(bidData);
 
 
   useEffect(() => {
@@ -43,10 +43,19 @@ const App: React.FC<{}> = (): JSX.Element => {
         if (poloniexData.type === 'ask' && askData.length < 10) {
             delete poloniexData.type;
             setAskData([...askData, poloniexData])
-          //  } else if(askData.length > 5) {
-          //    askData.pop();
-          //    setAskData(askData);
+           } else if(askData.length > 10) {
+             askData.pop();
+             setAskData(askData);
            }
+
+        if (poloniexData.type === 'bid' && bidData.length < 10) {
+            delete poloniexData.type;
+            setBidData([...bidData, poloniexData])
+          } else if(bidData.length > 10) {
+              bidData.pop();
+              setBidData(bidData);
+        }
+
         //   let poloniexAsksObj: Exchange = {
         //     exchange: 'Poloniex',
         //     ask: poloniexData.poloniexData.price,
@@ -110,10 +119,10 @@ const App: React.FC<{}> = (): JSX.Element => {
         title="Ask"
         data={askData}
       />
-      {/* <Book
+      <Book
         title="Bid"
         data={bidData}
-      />  */}
+      /> 
     </div>
   );
 }
