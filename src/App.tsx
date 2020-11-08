@@ -31,11 +31,17 @@ const App: React.FC<{}> = (): JSX.Element => {
     });
   }, []);
 
+  const [asks, setAsksState] = useState<any>([])
+  const [bids, setBidsState] = useState<any>([])
+
 
   const [poloniexAskData, setPoloniexAskData] = useState<Exchange[]>([])
   const [poloniexBidData, setPoloniexBidData] = useState<Exchange[]>([])
 
   const [bittrexAskData, setBittrexAskData] = useState<Exchange[]>([])
+  const [bittrexBidData, setBittrexBidData] = useState<Exchange[]>([])
+
+  console.log('BITTREX ASK DATA OUTSIDE USEEFFECT',bittrexAskData)
 
   useEffect(() => {
       socket.on('recievePoloniexData', (poloniexData: any) => {
@@ -43,6 +49,7 @@ const App: React.FC<{}> = (): JSX.Element => {
         if (poloniexData.type === 'ask' && poloniexAskData.length < 10) {
             delete poloniexData.type;
             setPoloniexAskData([...poloniexAskData, poloniexData])
+            setAsksState([...asks, poloniexData])
            } else if(poloniexAskData.length > 10) {
              poloniexAskData.pop();
              setPoloniexAskData(poloniexAskData);
@@ -51,6 +58,7 @@ const App: React.FC<{}> = (): JSX.Element => {
         if (poloniexData.type === 'bid' && poloniexBidData.length < 10) {
             delete poloniexData.type;
             setPoloniexBidData([...poloniexBidData, poloniexData])
+            setBidsState([...bids, poloniexData])
           } else if(poloniexBidData.length > 10) {
               poloniexBidData.pop();
               setPoloniexBidData(poloniexBidData);
@@ -64,25 +72,27 @@ const App: React.FC<{}> = (): JSX.Element => {
     socket.on('recieveBittrexData', (bittrexData: any) => {
       
       if(bittrexData.asks && bittrexAskData.length < 10){
-        console.log('INSIDEEEEEEEE',bittrexData.asks);
-        setBittrexAskData([...bittrexAskData, bittrexData.asks] )
-      } else if(bittrexData.length > 10){
-        console.log("MORE THAN 10")
-        bittrexData.pop();
-        setBittrexAskData(bittrexAskData);
-      }
+          delete bittrexData.asks.type;
+          setBittrexAskData([...bittrexAskData, bittrexData.asks])
+          setAsksState([...asks, bittrexData.asks])
+        } else if(bittrexData.length > 10){
+          bittrexData.pop();
+          setBittrexAskData(bittrexAskData);
+        }
 
-      // if(bittrexData.bids && bittrexBidData.length < 10){
-      //   delete bittrexData.type;
-      //   setBittrexAskData([...bittrexAskData, bittrexData])
-      // } else if(bittrexData.length > 10){
-      //   bittrexData.pop();
-      //   setBittrexAskData(bittrexAskData);
-      // }
+      if(bittrexData.bids && bittrexBidData.length < 10){
+          delete bittrexData.bids.type;
+          setBittrexBidData([...bittrexBidData, bittrexData.bids])
+          setBidsState([...bids, bittrexData.bids])
+        } else if(bittrexData.length > 10){
+          bittrexData.pop();
+          setBittrexBidData(bittrexBidData);
+        }
 
-
-    });
-  }, []);
+    }); return () => {
+      socket.off('recieveBittrexData')
+    }
+  });
 
   return (
     <div className="App">
@@ -90,11 +100,11 @@ const App: React.FC<{}> = (): JSX.Element => {
       <Chart data={poloniexAskData} />
        <Book
         title="Ask"
-        data={poloniexAskData}
+        data={asks}
       />
       <Book
         title="Bid"
-        data={poloniexBidData}
+        data={bids}
       /> 
     </div>
   );
