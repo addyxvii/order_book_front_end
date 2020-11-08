@@ -22,10 +22,11 @@ export const Chart: React.FC<Props> = ({ data }): JSX.Element => {
                 </linearGradient>
             </defs>
             <XAxis dataKey="price" />
-            <YAxis />
+            <YAxis dataKey="size"/>
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip />
             <Area type="monotone" dataKey="size" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
+            <Area type="monotone" dataKey="Quantity" stroke="#8884d8" fillOpacity={1} fill="url(#colorPv)" />
         </AreaChart>
     )
 }

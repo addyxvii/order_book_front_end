@@ -41,8 +41,6 @@ const App: React.FC<{}> = (): JSX.Element => {
   const [bittrexAskData, setBittrexAskData] = useState<Exchange[]>([])
   const [bittrexBidData, setBittrexBidData] = useState<Exchange[]>([])
 
-  console.log('BITTREX ASK DATA OUTSIDE USEEFFECT',bittrexAskData)
-
   useEffect(() => {
       socket.on('recievePoloniexData', (poloniexData: any) => {
         
@@ -97,7 +95,7 @@ const App: React.FC<{}> = (): JSX.Element => {
   return (
     <div className="App">
       <h1>Order Book </h1>
-      <Chart data={poloniexAskData} />
+      <Chart data={asks} />
        <Book
         title="Ask"
         data={asks}
