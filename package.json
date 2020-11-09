@@ -12,6 +12,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/recharts": "^1.8.16",
     "@types/socket.io-client": "^1.4.34",
+    "dotenv": "^8.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.0",

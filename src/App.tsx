@@ -6,11 +6,13 @@ import './Book.css';
 import Book from './Book';
 import { Chart } from './Chart';
 
-const ENDPOINT = "http://localhost:8000";
+require('dotenv').config()
+
+const ENDPOINT: any = process.env.REACT_APP_API; 
 const socket = openSocket(ENDPOINT);
 
 export interface Exchange {
-  exchange: string
+  exchange: string 
   ask?: string
   bid?: string
   volume: string
