@@ -93,7 +93,6 @@ const App: React.FC<{}> = (): JSX.Element => {
       socket.off('recieveBittrexData')
     }
   });
-
   return (
     <div className="App">
       <h1>Order Book </h1>
