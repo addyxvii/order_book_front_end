@@ -9,7 +9,7 @@ import { Chart } from './Chart';
 require('dotenv').config()
 
 const ENDPOINT: any = process.env.REACT_APP_API; 
-const socket = openSocket(ENDPOINT, {transports: ['websocket']});
+const socket = openSocket(ENDPOINT);
 
 export interface Exchange {
   exchange: string 
