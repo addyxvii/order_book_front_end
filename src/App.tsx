@@ -9,7 +9,7 @@ import { Chart } from './Chart';
 require('dotenv').config()
 
 const ENDPOINT: any = process.env.REACT_APP_API; 
-const socket = openSocket(ENDPOINT, {transports: ['websocket']});
+const socket = openSocket(ENDPOINT);
 
 export interface Exchange {
   exchange: string 
@@ -93,6 +93,7 @@ const App: React.FC<{}> = (): JSX.Element => {
       socket.off('recieveBittrexData')
     }
   });
+
   return (
     <div className="App">
       <h1>Order Book </h1>
