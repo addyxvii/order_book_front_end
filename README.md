@@ -1,4 +1,4 @@
-# BTC-ETH Order Book
+# BTC-ETH Order Book 📒 📈
 Front end application for a combined orderbook from Bittrex and Poloniex,
 The app communicates with a node backend using websockets to get real time data 
 
@@ -8,8 +8,7 @@ The app communicates with a node backend using websockets to get real time data
 
 ## Start the App
 
-###install deps
+### install deps
 
-    ```
-    npm i && npm start
-    ```
+    > npm i 
+    > npm start
