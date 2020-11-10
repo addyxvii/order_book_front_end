@@ -1,13 +1,13 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
+import { Exchange } from './App';
 import './Book.css';
-
 
 interface TableProps {
     title: string,
-    data: any[],
-}
+    data: Exchange[],
+};
 
-const Book: FunctionComponent<TableProps> = ({
+export const Book: React.FC<TableProps> = ({
     title,
     data
 }) => {
@@ -24,11 +24,11 @@ const Book: FunctionComponent<TableProps> = ({
                 </thead>
                 <tbody>
                     {
-                        data && data.length && data.length > 5 ? data.map((row: any) => {
+                        data && data.length && data.length > 5 ? data.map((row: Exchange) => {
                             return (
                                 <tr>
                                     {
-                                        Object.values(row).map((item: any) => {
+                                        Object.values(row).map((item: string): JSX.Element => {
                                             return (
                                                 <td>{item}</td>
                                             )
@@ -41,9 +41,5 @@ const Book: FunctionComponent<TableProps> = ({
                 </tbody>
             </table>
         </div>
-
-    )
-}
-
-export default Book;
-
+    );
+};
