@@ -4,15 +4,11 @@ The app communicates with a node backend using websockets to get real time data
 
 ![screenshot](./public/bookTop.png)
 ![screenshot](./public/bookBottom.png)
-## The App is Deployed :rocket: [here](oder-book-web-client.herokuapp.com)
+## The App is Deployed :rocket: [here](http://oder-book-web-client.herokuapp.com)
 
 ## Start the App
-    ###install deps
-     ```shell
-    npm i
-    ```
+###install deps
 
-    ###run
-    ```shell
-    npm start
+     ```shell
+    npm i && npm start
     ```
